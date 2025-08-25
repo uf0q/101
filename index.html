@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ألعاب للجميع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <style>
+        /* أنماط عامة */
+        :root {
+            --bg-dark: #1f2838;
+            --bg-light: #0a0e14;
+            --primary-color: #72efdd;
+            --secondary-color: #5ce0c7;
+            --text-color: #f1f1f1;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            direction: rtl;
+            text-align: center;
+        }
+
+        /* حاوية الجوال */
+        .mobile-container {
+            width: 100%;
+            max-width: 450px;
+            height: 90vh;
+            max-height: 900px;
+            background: #151d28;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .main-content {
+            padding: 20px;
+            width: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* أنماط الشاشة الرئيسية */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .main-menu h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-in-out;
+        }
+        .game-options {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 20px;
+        }
+        .game-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            box-shadow: 0 8px 15px var(--shadow-color);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 25px var(--shadow-color);
+        }
+        .game-card i {
+            font-size: 3em;
+            color: var(--primary-color);
+        }
+        .game-card h2 {
+            font-size: 1.8em;
+            margin: 0;
+            color: var(--secondary-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .game-card p {
+            font-size: 1em;
+            color: #ccc;
+        }
+        
+        /* الرسوم المتحركة */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* أنماط قسم الحقوق */
+        .footer {
+            margin-top: auto; /* يدفع الحقوق إلى الأسفل */
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            font-size: 0.9em;
+            width: 100%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .footer i {
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <main class="main-content">
+            <section class="main-menu">
+                <h1>اختر لعبتك</h1>
+                <div class="game-options">
+                    <a href="tic-tac-toe.html" class="game-card">
+                        <i class="fas fa-times-circle"></i>
+                        <h2>X و O</h2>
+                        <p>x o هيش نوبه.</p>
+                    </a>
+                    <a href="bra-el-salfa.html" class="game-card">
+                        <i class="fas fa-brain"></i>
+                        <h2>برا السالفة</h2>
+                        <p>لعب مع ربعك يالدجاجة + كذب عادي.</p>
+                    </a>
+                    <a href="snake.html" class="game-card">
+                        <i class="fas fa-snake"></i>
+                        <h2>لعبة الثعبان</h2>
+                        <p>دوس عن تموت بثعبان انزين ؟.</p>
+                    </a>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <i class="fas fa-code"></i>
+            <span>المعتصم الطوقي</span>
+        </footer>
+    </div>
+</body>
+</html>

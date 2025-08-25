@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة &#10006; و &#9679;</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+  <style>
+    /* أنماط عامة */
+    :root {
+      --bg-dark: #1f2838;
+      --bg-light: #0a0e14;
+      --primary-color: #72efdd;
+      --secondary-color: #5ce0c7;
+      --text-color: #f1f1f1;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.2);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      
+      --x-color: #3498db;
+      --o-color: #e74c3c;
+      --win-color: #2ecc71;
+      --lose-color: #e74c3c;
+      --draw-color: #f39c12;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      direction: rtl;
+      text-align: center;
+      position: relative;
+    }
+
+    /* حاوية الجوال */
+    .mobile-container {
+        width: 100%;
+        max-width: 450px;
+        height: 90vh;
+        max-height: 900px;
+        background: #151d28;
+        border-radius: 25px;
+        box-shadow: 0 10px 40px var(--shadow-color);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    /* زر العودة */
+    .back-button {
+      /* تعديل الأنماط ليظهر في الأسفل */
+      margin-top: auto; /* يدفع الزر إلى الأسفل */
+      margin-bottom: 20px;
+      color: var(--primary-color);
+      font-size: 1.5em;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+      z-index: 1000;
+      display: block;
+    }
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    
+    /* أنماط اللعبة */
+    .container {
+      max-width: 550px;
+      width: 95%;
+      margin: 20px auto;
+      padding: 0 15px;
+      box-shadow: 0 15px 30px var(--shadow-color);
+      border-radius: 20px;
+      background: #151d28;
+      overflow: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+    header.xo-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--bg-dark);
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      border-radius: 20px 20px 0 0;
+    }
+    header.xo-header h1 { margin: 0; font-size: 2.5em; }
+    
+    #scoreboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      background: var(--bg-dark);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    #scoreboard div {
+        position: relative;
+        padding: 5px;
+        transition: transform 0.3s ease;
+    }
+    #scoreboard div.active-player {
+        font-weight: bold;
+        transform: scale(1.1);
+        color: #ffeb3b;
+        text-shadow: 0 0 5px #ffeb3b;
+    }
+    
+    /* أنماط نافذة الخيارات المنبثقة (Modal) */
+    .modal {
+        display: none; /* إخفاء افتراضيًا */
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    .modal.show {
+      display: flex;
+    }
+    .modal-content {
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 450px;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      color: #aaa;
+      font-size: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .close-btn:hover { color: var(--lose-color); }
+    
+    /* أنماط خيارات اللعب */
+    #gameOptions { 
+      text-align: center; 
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      gap: 20px; 
+    }
+    .options-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .option-btn {
+      flex-grow: 1;
+      padding: 10px 15px;
+      font-size: 1em;
+      font-weight: bold;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--primary-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .option-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .option-btn.active {
+      background: var(--secondary-color);
+      color: var(--bg-dark);
+      border-color: var(--secondary-color);
+      transform: scale(1.05);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+    #gameOptions label { 
+      font-weight: bold; 
+      color: var(--text-color); 
+      margin-bottom: 5px;
+    }
+
+    /* أنماط زر بدء اللعب الجديد */
+    .modal-content .btn-new {
+      margin-top: 30px;
+      padding: 15px 30px;
+      background: var(--primary-color); /* تم تغيير هذا اللون */
+      font-size: 1.2em;
+      font-weight: bold;
+      border-radius: 50px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      color: var(--bg-dark); /* تم تغيير هذا اللون */
+    }
+    .modal-content .btn-new:hover {
+      background: var(--secondary-color); /* تم تغيير هذا اللون */
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+    }
+
+    #status {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+      animation: pulse 1.5s infinite;
+    }
+    .board-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .board {
+      display: grid;
+      gap: 10px;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .board.size-3x3 {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 320px;
+    }
+    .board.size-4x4 {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 420px;
+    }
+    .board.size-5x5 {
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 520px;
+    }
+    .cell {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      width: 80px;
+      height: 80px;
+      font-size: 3.5em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+      color: var(--primary-color);
+      border-radius: 15px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid var(--card-border);
+    }
+    .cell:hover:not(.taken) {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    }
+    .cell.taken { cursor: not-allowed; opacity: 0.8; }
+    
+    /* أنماط علامة X */
+    .cell.x-symbol:before {
+      content: '\2715'; /* علامة X حديثة */
+      color: var(--x-color);
+      font-size: 1.5em;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    /* أنماط علامة O */
+    .cell.o-symbol:before {
+      content: '\25EF'; /* علامة O حديثة */
+      color: var(--o-color);
+      font-size: 1.5em;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .cell.winning {
+      background: var(--win-color);
+      color: white;
+      animation: winAnimation 1s ease-in-out infinite alternate;
+    }
+    .buttons {
+      text-align: center;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .buttons button {
+      padding: 12px 25px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4-5px 6px rgba(0,0,0,0.1);
+      font-weight: bold;
+      color: var(--bg-dark);
+      background: var(--primary-color);
+    }
+    .buttons button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+    }
+    .btn-new {
+      background: var(--primary-color); /* تم تغيير هذا اللون */
+      color: var(--bg-dark) !important; /* تم تغيير هذا اللون */
+    }
+
+    /* أنماط أيقونة الإعدادات */
+    #open-options-btn {
+      background: transparent;
+      color: var(--primary-color);
+      font-size: 1.5em;
+      padding: 10px;
+      box-shadow: none;
+    }
+    #open-options-btn:hover {
+      background: rgba(0,0,0,0.05);
+      transform: scale(1.1);
+    }
+    
+    /* أنماط طبقات الأنميشن */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 4em;
+      font-weight: bold;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      color: white;
+    }
+    .overlay.active { opacity: 1; pointer-events: all; }
+    .overlay.win { background: rgba(46, 204, 113, 0.9); }
+    .overlay.lose { background: rgba(231, 76, 60, 0.9); }
+    .overlay.draw { background: rgba(255, 165, 0, 0.9); }
+    
+    /* الرسوم المتحركة */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    @keyframes winAnimation {
+      0%, 100% { box-shadow: 0 0 15px 5px var(--win-color); }
+      50% { box-shadow: 0 0 25px 8px var(--win-color); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    /* استجابة الأجهزة الصغيرة */
+    @media screen and (max-width: 550px) {
+      .container { width: 95%; }
+      header.xo-header h1 { font-size: 2em; }
+      .cell { width: 60px; height: 60px; font-size: 2.5em; }
+      .overlay { font-size: 2.5em; }
+      .modal-content { padding: 30px 20px; }
+      .buttons button { padding: 10px 20px; font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <main class="main-content">
+          <section id="x-o" class="game-container">
+            <div class="container">
+              <header class="xo-header">
+                <h1>لعبة &#10006; و &#9679;</h1>
+              </header>
+              <div id="scoreboard">
+                <div id="playerXScore">لاعب &#10006;: <span id="scoreX">0</span></div>
+                <div>الوقت المتبقي: <span id="timer">30</span></div>
+                <div id="playerOScore">لاعب &#9679;: <span id="scoreO">0</span></div>
+              </div>
+              <div id="status"></div>
+              <div class="board-wrapper">
+                <div class="board" id="board"></div>
+              </div>
+              <div class="buttons">
+                <button class="btn-new" onclick="newGame()">لعبة جديدة</button>
+                <button class="btn-reset" onclick="resetScores()">إعادة ضبط النتائج</button>
+                <button id="open-options-btn" title="إعدادات اللعبة"><i class="fas fa-cog"></i></button>
+              </div>
+            </div>
+            <div id="lostOverlay" class="overlay lose">لقد خسرت!</div>
+            <div id="winOverlay" class="overlay win">لقد فزت!</div>
+            <div id="drawOverlay" class="overlay draw">تعادل!</div>
+          </section>
+        </main>
+        
+        <a href="index.html" class="back-button" title="عودة إلى الرئيسية">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+
+  <div id="options-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>إعدادات اللعبة</h2>
+      <div id="gameOptions">
+          <div>
+            <label>وضع اللعبة:</label>
+            <div id="mode-buttons" class="options-group">
+                <button class="option-btn active" data-value="pvp">لاعب ضد لاعب</button>
+                <button class="option-btn" data-value="bot">لاعب ضد البوت</button>
+            </div>
+          </div>
+          <div id="difficultyContainer" style="display:none;">
+            <label>مستوى البوت:</label>
+            <div id="difficulty-buttons" class="options-group">
+                <button class="option-btn active" data-value="easy">سهل</button>
+                <button class="option-btn" data-value="medium">متوسط</button>
+                <button class="option-btn" data-value="hard">صعب</button>
+            </div>
+          </div>
+          <div>
+            <label>حجم اللوحة:</label>
+            <div id="board-size-buttons" class="options-group">
+                <button class="option-btn active" data-value="3">3x3</button>
+                <button class="option-btn" data-value="4">4x4</button>
+                <button class="option-btn" data-value="5">5x5</button>
+            </div>
+          </div>
+          <button class="btn-new" onclick="closeModal()">بدء اللعب</button>
+        </div>
+    </div>
+  </div>
+
+  <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3" preload="auto"></audio>
+  <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fantasy-game-sweep-270.mp3" preload="auto"></audio>
+  <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-video-game-fail-2882.mp3" preload="auto"></audio>
+  <audio id="drawSound" src="https://assets.mixkit.co/sfx/preview/mixkit-player-loses-in-a-video-game-2415.mp3" preload="auto"></audio>
+  
+  <script>
+    // المتغيرات الأساسية للعبة XO
+    let board = [];
+    let currentPlayer = 'X';
+    let gameActive = true;
+    let winningCombinationFound = null;
+    let scoreX = 0, scoreO = 0;
+    let gameMode = "pvp";
+    let botDifficulty = "easy";
+    let boardSize = 3;
+    let winLength = 3;
+    let timeLeft = 30, timerInterval;
+    
+    const boardElement = document.getElementById("board");
+    const statusElement = document.getElementById("status");
+    const modeButtons = document.getElementById("mode-buttons");
+    const difficultyButtons = document.getElementById("difficulty-buttons");
+    const difficultyContainer = document.getElementById("difficultyContainer");
+    const boardSizeButtons = document.getElementById("board-size-buttons");
+
+    const openOptionsBtn = document.getElementById("open-options-btn");
+    const optionsModal = document.getElementById("options-modal");
+    const closeModalBtn = optionsModal.querySelector(".close-btn");
+
+    const clickSound = document.getElementById("clickSound");
+    const winSound = document.getElementById("winSound");
+    const loseSound = document.getElementById("loseSound");
+    const drawSound = document.getElementById("drawSound");
+
+    function playSound(sound) {
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play();
+        }
+    }
+    
+    // التحقق من حالة اللاعب الحالي وتحديث لوحة النتائج
+    function updatePlayerStatus() {
+        document.getElementById('playerXScore').classList.remove('active-player');
+        document.getElementById('playerOScore').classList.remove('active-player');
+        if (currentPlayer === 'X') {
+            document.getElementById('playerXScore').classList.add('active-player');
+            statusElement.textContent = "دور اللاعب X";
+        } else {
+            document.getElementById('playerOScore').classList.add('active-player');
+            statusElement.textContent = "دور اللاعب O";
+        }
+    }
+    
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 30;
+        document.getElementById('timer').textContent = timeLeft;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                handleTimeout();
+            }
+        }, 1000);
+    }
+    
+    function handleTimeout() {
+        gameActive = false;
+        statusElement.textContent = "انتهى الوقت!";
+        if (currentPlayer === 'X') {
+            scoreO++;
+        } else {
+            scoreX++;
+        }
+        updateScoreDisplay();
+        setTimeout(newGame, 2000);
+    }
+    
+    function renderBoard() {
+        boardElement.innerHTML = '';
+        boardElement.className = 'board';
+        boardElement.classList.add(`size-${boardSize}x${boardSize}`);
+        
+        for (let i = 0; i < boardSize * boardSize; i++) {
+            const cellElement = document.createElement("div");
+            cellElement.classList.add("cell");
+            
+            if (board[i] === 'X') {
+                cellElement.classList.add('x-symbol');
+            } else if (board[i] === 'O') {
+                cellElement.classList.add('o-symbol');
+            }
+
+            if (winningCombinationFound && winningCombinationFound.includes(i)) {
+                cellElement.classList.add("winning");
+            }
+            cellElement.addEventListener("click", () => cellClicked(i));
+            if (board[i] !== '') cellElement.classList.add("taken");
+            boardElement.appendChild(cellElement);
+        }
+    }
+    
+    function cellClicked(index) {
+        if (board[index] !== '' || !gameActive) return;
+        if (gameMode === "bot" && currentPlayer !== 'X') return;
+        
+        board[index] = currentPlayer;
+        playSound(clickSound);
+        checkWinner();
+        renderBoard();
+        
+        if (gameActive) {
+            currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+            updatePlayerStatus();
+            startTimer();
+            if (gameMode === "bot" && currentPlayer === 'O') {
+                statusElement.textContent = "دور البوت";
+                setTimeout(botMove, 700);
+            }
+        }
+    }
+    
+    function checkWinner() {
+        const winningCombinations = generateWinningCombinations(boardSize, winLength);
+        for (let combination of winningCombinations) {
+            const symbols = combination.map(i => board[i]);
+            if (symbols.every(symbol => symbol !== '' && symbol === symbols[0])) {
+                gameActive = false;
+                winningCombinationFound = combination;
+                statusElement.textContent = `الفائز هو ${symbols[0] === 'X' ? 'X' : 'O'}!`;
+                updateScore(symbols[0]);
+                if (gameMode === "bot") {
+                    if (symbols[0] === 'X') setTimeout(showWinAnimation, 500);
+                    else setTimeout(showLostAnimation, 500);
+                }
+                setTimeout(newGame, 3000);
+                return;
+            }
+        }
+        if (!board.includes('')) {
+            gameActive = false;
+            statusElement.textContent = "التعادل!";
+            showDrawAnimation();
+            setTimeout(newGame, 3000);
+        }
+    }
+
+    function generateWinningCombinations(size, length) {
+        const combinations = [];
+        // Rows
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j <= size - length; j++) {
+                const combo = [];
+                for (let k = 0; k < length; k++) {
+                    combo.push(i * size + j + k);
+                }
+                combinations.push(combo);
+            }
+        }
+        // Columns
+        for (let i = 0; i <= size - length; i++) {
+            for (let j = 0; j < size; j++) {
+                const combo = [];
+                for (let k = 0; k < length; k++) {
+                    combo.push((i + k) * size + j);
+                }
+                combinations.push(combo);
+            }
+        }
+        // Diagonals (top-left to bottom-right)
+        for (let i = 0; i <= size - length; i++) {
+            for (let j = 0; j <= size - length; j++) {
+                const combo = [];
+                for (let k = 0; k < length; k++) {
+                    combo.push((i + k) * size + j + k);
+                }
+                combinations.push(combo);
+            }
+        }
+        // Diagonals (top-right to bottom-left)
+        for (let i = 0; i <= size - length; i++) {
+            for (let j = length - 1; j < size; j++) {
+                const combo = [];
+                for (let k = 0; k < length; k++) {
+                    combo.push((i + k) * size + j - k);
+                }
+                combinations.push(combo);
+            }
+        }
+        return combinations;
+    }
+    
+    function updateScore(winner) {
+        if (winner === 'X') scoreX++;
+        else if (winner === 'O') scoreO++;
+        updateScoreDisplay();
+        localStorage.setItem('ticTacToeScores', JSON.stringify({ X: scoreX, O: scoreO }));
+    }
+    
+    function updateScoreDisplay() {
+        document.getElementById("scoreX").textContent = scoreX;
+        document.getElementById("scoreO").textContent = scoreO;
+    }
+
+    function getSelectedOption(groupElement) {
+        const activeBtn = groupElement.querySelector('.option-btn.active');
+        return activeBtn ? activeBtn.dataset.value : null;
+    }
+
+    function newGame() {
+        clearInterval(timerInterval);
+        
+        gameMode = getSelectedOption(modeButtons);
+        botDifficulty = getSelectedOption(difficultyButtons);
+        boardSize = parseInt(getSelectedOption(boardSizeButtons));
+        winLength = boardSize === 3 ? 3 : (boardSize === 4 ? 4 : 5);
+        
+        board = Array(boardSize * boardSize).fill('');
+        currentPlayer = 'X';
+        gameActive = true;
+        winningCombinationFound = null;
+        renderBoard();
+        updatePlayerStatus();
+        startTimer();
+        
+        if (gameMode === "bot" && currentPlayer === 'O') {
+            statusElement.textContent = "دور البوت";
+            setTimeout(botMove, 700);
+        }
+    }
+    
+    function resetScores() {
+        scoreX = scoreO = 0;
+        updateScoreDisplay();
+        localStorage.removeItem('ticTacToeScores');
+        newGame();
+    }
+    
+    function botMove() {
+        if (!gameActive) return;
+        let move;
+        if (botDifficulty === 'easy') {
+            move = getRandomMove();
+        } else if (botDifficulty === 'medium') {
+            move = mediumBotMove();
+        } else if (botDifficulty === 'hard') {
+            move = bestMove();
+        }
+        
+        if (move !== undefined) {
+            board[move] = 'O';
+            playSound(clickSound);
+            checkWinner();
+            renderBoard();
+            if (gameActive) {
+                currentPlayer = 'X';
+                updatePlayerStatus();
+                startTimer();
+            }
+        }
+    }
+    
+    function getRandomMove() {
+        const moves = getAvailableMoves();
+        return moves[Math.floor(Math.random() * moves.length)];
+    }
+
+    function getAvailableMoves(bd = board) {
+        return bd.map((cell, index) => cell === '' ? index : null).filter(val => val !== null);
+    }
+    
+    function mediumBotMove() {
+        const moves = getAvailableMoves();
+        // Check if bot can win in the next move
+        for (let idx of moves) {
+            board[idx] = 'O';
+            if (checkWinnerForBoard(board) === 'O') {
+                board[idx] = '';
+                return idx;
+            }
+            board[idx] = '';
+        }
+        // Check if player can win and block them
+        for (let idx of moves) {
+            board[idx] = 'X';
+            if (checkWinnerForBoard(board) === 'X') {
+                board[idx] = '';
+                return idx;
+            }
+            board[idx] = '';
+        }
+        // Take center or a corner
+        const center = Math.floor(board.length / 2);
+        if (board[center] === '') return center;
+        const corners = [0, boardSize - 1, board.length - boardSize, board.length - 1].filter(idx => board[idx] === '');
+        if (corners.length > 0) return corners[Math.floor(Math.random() * corners.length)];
+        // Take any available move
+        return getRandomMove();
+    }
+    
+    function bestMove() {
+        let bestScore = -Infinity;
+        let move;
+        const moves = getAvailableMoves();
+        for (let idx of moves) {
+            board[idx] = 'O';
+            let score = minimax(board, 0, false);
+            board[idx] = '';
+            if (score > bestScore) {
+                bestScore = score;
+                move = idx;
+            }
+        }
+        return move;
+    }
+    
+    function minimax(bd, depth, isMaximizing) {
+        const result = checkWinnerForBoard(bd);
+        if (result !== null) {
+            if (result === 'O') return 10 - depth;
+            else if (result === 'X') return depth - 10;
+            else return 0; // Draw
+        }
+        
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let idx of getAvailableMoves(bd)) {
+                bd[idx] = 'O';
+                let score = minimax(bd, depth + 1, false);
+                bd[idx] = '';
+                bestScore = Math.max(score, bestScore);
+            }
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let idx of getAvailableMoves(bd)) {
+                bd[idx] = 'X';
+                let score = minimax(bd, depth + 1, true);
+                bd[idx] = '';
+                bestScore = Math.min(score, bestScore);
+            }
+            return bestScore;
+        }
+    }
+    
+    function checkWinnerForBoard(bd) {
+        const winningCombinations = generateWinningCombinations(boardSize, winLength);
+        for (let combination of winningCombinations) {
+            const symbols = combination.map(i => bd[i]);
+            if (symbols.every(symbol => symbol !== '' && symbol === symbols[0])) {
+                return symbols[0];
+            }
+        }
+        if (!bd.includes('')) return 'draw';
+        return null;
+    }
+    
+    function showLostAnimation() {
+        playSound(loseSound);
+        document.getElementById("lostOverlay").classList.add("active");
+        setTimeout(() => document.getElementById("lostOverlay").classList.remove("active"), 2000);
+    }
+    
+    function showWinAnimation() {
+        playSound(winSound);
+        document.getElementById("winOverlay").classList.add("active");
+        setTimeout(() => document.getElementById("winOverlay").classList.remove("active"), 2000);
+    }
+    
+    function showDrawAnimation() {
+        playSound(drawSound);
+        document.getElementById("drawOverlay").classList.add("active");
+        setTimeout(() => document.getElementById("drawOverlay").classList.remove("active"), 2000);
+    }
+
+    function toggleDifficulty() {
+        const mode = getSelectedOption(modeButtons);
+        if (mode === "bot") {
+            difficultyContainer.style.display = "block";
+        } else {
+            difficultyContainer.style.display = "none";
+        }
+    }
+    
+    function setupOptionButtons(groupElement) {
+        groupElement.querySelectorAll('.option-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                groupElement.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                if (groupElement.id === 'mode-buttons') {
+                    toggleDifficulty();
+                }
+            });
+        });
+    }
+
+    function openModal() {
+        optionsModal.classList.add("show");
+    }
+
+    function closeModal() {
+        optionsModal.classList.remove("show");
+        newGame(); // Start a new game with the selected options
+    }
+
+    window.addEventListener('load', () => {
+        const savedScores = JSON.parse(localStorage.getItem('ticTacToeScores'));
+        if (savedScores) {
+            scoreX = savedScores.X || 0;
+            scoreO = savedScores.O || 0;
+            updateScoreDisplay();
+        }
+        setupOptionButtons(modeButtons);
+        setupOptionButtons(difficultyButtons);
+        setupOptionButtons(boardSizeButtons);
+        toggleDifficulty();
+        openOptionsBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        newGame();
+    });
+  </script>
+</body>
+</html>

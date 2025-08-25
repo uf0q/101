@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>لعبة الثعبان الاحترافية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <style>
+        /* تعريف متغيرات الألوان من الصفحة الرئيسية */
+        :root {
+            --bg-dark: #1f2838;
+            --bg-light: #0a0e14;
+            --primary-color: #72efdd;
+            --secondary-color: #5ce0c7;
+            --text-color: #f1f1f1;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+            color: var(--text-color);
+            text-align: center;
+            direction: rtl;
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: #151d28;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            width: 350px;
+            position: relative;
+            overflow: hidden;
+            height: 600px;
+        }
+        
+        /* تصميم زر العودة الجديد */
+        .back-home-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--card-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: var(--primary-color);
+            text-decoration: none;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 12; /* ليبقى فوق كل الشاشات */
+        }
+        
+        .back-home-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .back-home-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 10px 0;
+            font-size: 2.5em;
+        }
+
+        canvas {
+            border: 5px solid var(--secondary-color);
+            background-color: #44607c;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            touch-action: none;
+            display: block;
+        }
+
+        .score-container {
+            margin: 15px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            font-size: 2em;
+            padding: 10px 25px;
+            margin: 5px;
+            border: none;
+            background-color: var(--primary-color);
+            color: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px var(--secondary-color);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .control-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .horizontal-controls {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .game-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(21, 29, 40, 0.95);
+            border-radius: 15px;
+            z-index: 10;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .game-screen h2 {
+            margin: 0 0 20px;
+            color: var(--text-color);
+            font-size: 2em;
+        }
+        
+        .main-btn {
+            padding: 18px 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: var(--primary-color);
+            color: var(--bg-light);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px var(--secondary-color);
+            transition: all 0.2s ease;
+            letter-spacing: 1px;
+            width: 90%;
+            margin: 10px auto;
+        }
+        
+        .main-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+        
+        #startBtn {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .game-screen p {
+            font-size: 1.2em;
+            color: var(--text-color);
+            margin: 5px 0;
+        }
+        
+        .game-over {
+            transform: scale(0.5);
+            opacity: 0;
+            transition: all 0.4s ease-in-out;
+            pointer-events: none;
+        }
+
+        .game-over.active {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+            text-align: left;
+            width: 80%;
+        }
+
+        .leaderboard h3 {
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .leaderboard ol {
+            padding-right: 20px;
+        }
+
+        .leaderboard li {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        .options-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(21, 29, 40, 0.95);
+            border-radius: 15px;
+            z-index: 11;
+        }
+
+        .options-screen.active {
+            display: flex;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .option-group {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .option-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .option-group select {
+            padding: 8px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 2px solid var(--primary-color);
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            cursor: pointer;
+            width: 80%;
+            max-width: 250px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .back-to-menu-btn {
+            background-color: #e74c3c;
+            box-shadow: 0 6px #c0392b;
+        }
+        
+        .back-to-menu-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="game-container">
+        <a href="index.html" class="back-home-btn">
+            <i class="fas fa-home"></i>
+        </a>
+        
+        <div class="game-screen" id="startScreen">
+            <h1>لعبة الثعبان</h1>
+            <button id="startBtn" class="main-btn">ابدأ اللعب</button>
+            <div class="options-menu">
+            </div>
+        </div>
+
+        <div class="game-play-area hidden">
+            <canvas id="gameCanvas" width="300" height="300"></canvas>
+            <div class="score-container" id="scoreContainer">
+                النتيجة: <span id="score">0</span>
+            </div>
+            <div class="controls" id="controls">
+                <button id="up" class="control-btn">⬆️</button>
+                <div class="horizontal-controls">
+                    <button id="left" class="control-btn">⬅️</button>
+                    <button id="right" class="control-btn">➡️</button>
+                </div>
+                <button id="down" class="control-btn">⬇️</button>
+            </div>
+        </div>
+
+        <div class="game-screen game-over" id="gameOverScreen">
+            <h2>انتهت اللعبة!</h2>
+            <p>النتيجة النهائية: <span id="finalScore">0</span></p>
+            <div class="button-group">
+                <button id="restartBtn" class="main-btn">إعادة اللعب</button>
+            </div>
+            <div class="leaderboard">
+                <h3>أفضل النتائج</h3>
+                <ol id="highScoresList"></ol>
+            </div>
+        </div>
+    </div>
+
+    <audio id="eatSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+    <audio id="bonusSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" preload="auto"></audio>
+    <audio id="gameOverSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" preload="auto"></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreEl = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const eatSound = document.getElementById('eatSound');
+        const bonusSound = document.getElementById('bonusSound');
+        const gameOverSound = document.getElementById('gameOverSound');
+        const startScreen = document.getElementById('startScreen');
+        const startBtn = document.getElementById('startBtn');
+        const gameContainer = document.getElementById('game-container');
+        const highScoresList = document.getElementById('highScoresList');
+        const scoreContainer = document.getElementById('scoreContainer');
+        const controls = document.getElementById('controls');
+        const gamePlayArea = document.querySelector('.game-play-area');
+        
+        const TILE_SIZE = 15;
+        const BONUS_FOOD_VALUE = 50;
+        let snake, food, bonusFood, obstacles;
+        let dx, dy;
+        let score;
+        let lastRenderTime;
+        let gameSpeed = 150;
+        let isGameOver;
+        let isDirectionChanged = false;
+        let snakeColor = '#2ecc71';
+        let snakeShape = 'rounded';
+        let bonusFoodTimer;
+        let soundEnabled = true;
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        // وظيفة لإخفاء وإظهار الشاشات
+        function showScreen(screen) {
+            document.querySelectorAll('.game-screen, .options-screen').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.game-play-area').forEach(s => s.classList.add('hidden'));
+            screen.classList.remove('hidden');
+        }
+
+        // إظهار شاشة البداية
+        function showStartScreen() {
+            showScreen(startScreen);
+        }
+
+        // إظهار منطقة اللعب
+        function showGamePlay() {
+            startScreen.classList.add('hidden');
+            gamePlayArea.classList.remove('hidden');
+        }
+
+        // تهيئة اللعبة لبدء جديدة
+        function initializeGame() {
+            snake = [{ x: 10, y: 10 }];
+            food = {};
+            bonusFood = null;
+            obstacles = [];
+            dx = 1;
+            dy = 0;
+            score = 0;
+            gameSpeed = 150; // سرعة اللعب الافتراضية
+            scoreEl.textContent = score;
+            isGameOver = false;
+            
+            gameOverScreen.classList.remove('active');
+            gameContainer.classList.remove('shake');
+            showGamePlay();
+
+            generateFood();
+            generateObstacles(5);
+            lastRenderTime = 0;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // توليد طعام جديد في مكان عشوائي
+        function generateFood() {
+            const maxX = canvas.width / TILE_SIZE;
+            const maxY = canvas.height / TILE_SIZE;
+            
+            do {
+                food = {
+                    x: Math.floor(Math.random() * maxX),
+                    y: Math.floor(Math.random() * maxY),
+                    isBonus: Math.random() < 0.1 // 10% فرصة ليكون طعام إضافي
+                };
+            } while (isFoodOnSnakeOrObstacle(food));
+
+            if (food.isBonus) {
+                bonusFood = food;
+                clearTimeout(bonusFoodTimer);
+                bonusFoodTimer = setTimeout(() => {
+                    bonusFood = null;
+                }, 5000); // طعام المكافأة يختفي بعد 5 ثواني
+            } else {
+                bonusFood = null;
+            }
+        }
+        
+        // توليد العقبات في أماكن عشوائية
+        function generateObstacles(count) {
+            const maxX = canvas.width / TILE_SIZE;
+            const maxY = canvas.height / TILE_SIZE;
+            obstacles = [];
+            for (let i = 0; i < count; i++) {
+                let newObstacle;
+                do {
+                    newObstacle = {
+                        x: Math.floor(Math.random() * maxX),
+                        y: Math.floor(Math.random() * maxY)
+                    };
+                } while (isFoodOnSnakeOrObstacle(newObstacle) || (newObstacle.x === food.x && newObstacle.y === food.y));
+                obstacles.push(newObstacle);
+            }
+        }
+
+        // التحقق من أن الطعام أو العقبة لا تتولد على الثعبان
+        function isFoodOnSnakeOrObstacle(position) {
+            for (let i = 0; i < snake.length; i++) {
+                if (position.x === snake[i].x && position.y === snake[i].y) {
+                    return true;
+                }
+            }
+            for (let i = 0; i < obstacles.length; i++) {
+                if (position.x === obstacles[i].x && position.y === obstacles[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // رسم عناصر اللعبة على Canvas
+        function draw() {
+            ctx.fillStyle = '#44607c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // رسم العقبات
+            ctx.fillStyle = '#7f8c8d';
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x * TILE_SIZE, obstacle.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            });
+
+            // رسم الطعام العادي
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(food.x * TILE_SIZE, food.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+            // رسم طعام المكافأة إذا كان موجوداً
+            if (bonusFood) {
+                ctx.fillStyle = '#f1c40f';
+                ctx.beginPath();
+                ctx.arc(bonusFood.x * TILE_SIZE + TILE_SIZE / 2, bonusFood.y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE * 0.8, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            // رسم الثعبان
+            ctx.fillStyle = snakeColor;
+            snake.forEach(segment => {
+                if (snakeShape === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(segment.x * TILE_SIZE + TILE_SIZE / 2, segment.y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(segment.x * TILE_SIZE, segment.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
+            });
+        }
+
+        // تحديث حالة اللعبة (حركة الثعبان، الاصطدام، إلخ)
+        function update() {
+            if (isGameOver) return;
+
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            snake.unshift(head);
+            isDirectionChanged = false;
+
+            // التحقق من الاصطدام بالجدران
+            if (head.x < 0 || head.x >= canvas.width / TILE_SIZE || head.y < 0 || head.y >= canvas.height / TILE_SIZE) {
+                endGame();
+                return;
+            }
+            // التحقق من الاصطدام بالثعبان نفسه
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    endGame();
+                    return;
+                }
+            }
+            // التحقق من الاصطدام بالعقبات
+            for (let i = 0; i < obstacles.length; i++) {
+                if (head.x === obstacles[i].x && head.y === obstacles[i].y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            // التحقق من أكل طعام المكافأة
+            if (bonusFood && head.x === bonusFood.x && head.y === bonusFood.y) {
+                score += BONUS_FOOD_VALUE;
+                bonusSound.play();
+                bonusFood = null;
+                clearTimeout(bonusFoodTimer);
+                gameSpeed = Math.max(80, gameSpeed - 5);
+                snake.pop(); // لا يزداد طول الثعبان عند أكل المكافأة
+                generateFood();
+            // التحقق من أكل الطعام العادي
+            } else if (head.x === food.x && head.y === food.y) {
+                score += 10 + Math.floor(snake.length / 5) * 5;
+                eatSound.play();
+                gameSpeed = Math.max(80, gameSpeed - 2);
+                generateFood();
+            } else {
+                snake.pop(); // إزالة آخر قطعة من الثعبان ليتحرك
+            }
+
+            scoreEl.textContent = score;
+        }
+
+        // نهاية اللعبة
+        function endGame() {
+            isGameOver = true;
+            gameOverSound.play();
+            finalScoreEl.textContent = score;
+            gameOverScreen.classList.add('active');
+            gameContainer.classList.add('shake');
+            updateHighScores(score);
+            gamePlayArea.classList.add('hidden');
+        }
+
+        // حلقة اللعبة الرئيسية
+        function gameLoop(timestamp) {
+            if (isGameOver) return;
+            const elapsedTime = timestamp - lastRenderTime;
+
+            if (elapsedTime > gameSpeed) {
+                lastRenderTime = timestamp;
+                update();
+                draw();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // الحصول على أفضل النتائج من التخزين المحلي
+        function getHighScores() {
+            const scores = localStorage.getItem('highScores');
+            return scores ? JSON.parse(scores) : [];
+        }
+
+        // تحديث أفضل النتائج وإضافتها إلى التخزين المحلي
+        function updateHighScores(newScore) {
+            const highScores = getHighScores();
+            highScores.push(newScore);
+            highScores.sort((a, b) => b - a);
+            const topFive = highScores.slice(0, 5);
+            localStorage.setItem('highScores', JSON.stringify(topFive));
+            displayHighScores(topFive);
+        }
+
+        // عرض أفضل النتائج على الشاشة
+        function displayHighScores(scores) {
+            highScoresList.innerHTML = '';
+            scores.forEach(score => {
+                const li = document.createElement('li');
+                li.textContent = score;
+                highScoresList.appendChild(li);
+            });
+        }
+        
+        // تغيير اتجاه الثعبان مع التحقق من عدم عكس الاتجاه
+        function changeDirection(newDx, newDy) {
+            if (isGameOver || isDirectionChanged) return;
+            if ((newDx === -dx && newDx !== 0) || (newDy === -dy && newDy !== 0)) {
+                return;
+            }
+            dx = newDx;
+            dy = newDy;
+            isDirectionChanged = true;
+        }
+
+        // مستمعات الأحداث لأزرار التحكم
+        document.getElementById('up').addEventListener('click', () => changeDirection(0, -1));
+        document.getElementById('down').addEventListener('click', () => changeDirection(0, 1));
+        document.getElementById('left').addEventListener('click', () => changeDirection(-1, 0));
+        document.getElementById('right').addEventListener('click', () => changeDirection(1, 0));
+
+        // التحكم باللمس
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            const minSwipeDistance = 20;
+
+            if (Math.abs(diffX) > minSwipeDistance || Math.abs(diffY) > minSwipeDistance) {
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX > 0) {
+                        changeDirection(1, 0);
+                    } else {
+                        changeDirection(-1, 0);
+                    }
+                } else {
+                    if (diffY > 0) {
+                        changeDirection(0, 1);
+                    } else {
+                        changeDirection(0, -1);
+                    }
+                }
+            }
+        });
+
+        // التحكم بلوحة المفاتيح
+        document.addEventListener('keydown', e => {
+            if (isGameOver) return;
+            switch (e.key) {
+                case 'ArrowUp': case 'w': changeDirection(0, -1); break;
+                case 'ArrowDown': case 's': changeDirection(0, 1); break;
+                case 'ArrowLeft': case 'a': changeDirection(-1, 0); break;
+                case 'ArrowRight': case 'd': changeDirection(1, 0); break;
+            }
+        });
+
+        // مستمعات أحداث الأزرار
+        startBtn.addEventListener('click', initializeGame);
+        restartBtn.addEventListener('click', initializeGame);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            displayHighScores(getHighScores());
+        });
+    </script>
+</body>
+</html>
