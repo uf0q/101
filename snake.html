@@ -331,8 +331,8 @@
             <div class="controls" id="controls">
                 <button id="up" class="control-btn">⬆️</button>
                 <div class="horizontal-controls">
-                    <button id="left" class="control-btn">⬅️</button>
-                    <button id="right" class="control-btn">➡️</button>
+                    <button id="left" class="control-btn">➡️</button>
+                    <button id="right" class="control-btn">⬅️</button>
                 </div>
                 <button id="down" class="control-btn">⬇️</button>
             </div>
@@ -635,11 +635,11 @@
             isDirectionChanged = true;
         }
 
-        // مستمعات الأحداث لأزرار التحكم
+        // مستمعات الأحداث لأزرار التحكم (تم تبديل اليمين واليسار)
         document.getElementById('up').addEventListener('click', () => changeDirection(0, -1));
         document.getElementById('down').addEventListener('click', () => changeDirection(0, 1));
-        document.getElementById('left').addEventListener('click', () => changeDirection(-1, 0));
-        document.getElementById('right').addEventListener('click', () => changeDirection(1, 0));
+        document.getElementById('left').addEventListener('click', () => changeDirection(1, 0)); 
+        document.getElementById('right').addEventListener('click', () => changeDirection(-1, 0)); 
 
         // التحكم باللمس
         canvas.addEventListener('touchstart', e => {
