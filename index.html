@@ -110,6 +110,110 @@
             color: #ccc;
         }
         
+        /* تصميم الثعبان الخاص */
+        .snake-icon {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .snake-body {
+            position: absolute;
+            width: 60px;
+            height: 20px;
+            background: linear-gradient(to right, #72efdd, #5ce0c7);
+            border-radius: 10px;
+            animation: slither 3s infinite ease-in-out;
+        }
+        
+        .snake-head {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #72efdd;
+            border-radius: 50%;
+            right: -5px;
+            z-index: 2;
+        }
+        
+        .snake-eye {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #000;
+            border-radius: 50%;
+            top: 5px;
+            right: 3px;
+        }
+        
+        .snake-tail {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #5ce0c7;
+            border-radius: 50%;
+            left: -5px;
+            z-index: 1;
+        }
+        
+        .snake-body::before,
+        .snake-body::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+        
+        .snake-body::before {
+            top: 3px;
+            left: 15px;
+        }
+        
+        .snake-body::after {
+            bottom: 3px;
+            left: 30px;
+        }
+        
+        @keyframes slither {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-3px) rotate(2deg); }
+            50% { transform: translateX(3px) rotate(-2deg); }
+            75% { transform: translateX(-3px) rotate(1deg); }
+        }
+        
+        /* حركات للأيقونات الأخرى */
+        .fa-times-circle {
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        .fa-brain {
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        .fa-puzzle-piece {
+            animation: rotate 4s infinite linear;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* الرسوم المتحركة */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -129,11 +233,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 10px;
         }
         .footer i {
             color: var(--primary-color);
             font-size: 1.1em;
+        }
+        
+        /* زر الإنستجرام */
+        .instagram-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #0f0c08, #28135a, #eb1035, #cc2366, #bc1888);
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .instagram-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .instagram-btn i {
+            color: white;
+            font-size: 1em;
         }
     </style>
 </head>
@@ -154,9 +283,23 @@
                         <p>لعب مع ربعك يالدجاجة + كذب عادي.</p>
                     </a>
                     <a href="snake.html" class="game-card">
-                        <i class="fas fa-snake"></i>
+                        <!-- تصميم الثعبان المعدل -->
+                        <div class="snake-icon">
+                            <div class="snake-body">
+                                <div class="snake-head">
+                                    <div class="snake-eye"></div>
+                                </div>
+                                <div class="snake-tail"></div>
+                            </div>
+                        </div>
                         <h2>لعبة الثعبان</h2>
                         <p>دوس عن تموت بثعبان انزين ؟.</p>
+                    </a>
+                    <!-- إضافة لعبة الألغاز -->
+                    <a href="puzzle.html" class="game-card">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h2>لعبة الألغاز</h2>
+                        <p>اختبر معلوماتك مع أصدقائك في لعبة الأسئلة الممتعة.</p>
                     </a>
                 </div>
             </section>
@@ -165,6 +308,9 @@
         <footer class="footer">
             <i class="fas fa-code"></i>
             <span>المعتصم الطوقي</span>
+            <a href="https://www.instagram.com/ti.1k/" class="instagram-btn" target="_blank">
+                <i class="fab fa-instagram"></i>
+            </a>
         </footer>
     </div>
 </body>
