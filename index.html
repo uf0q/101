@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ألعاب للجميع</title>
+    <title>𝗟𝗺𝗮𝗵 - ل͛م͛ه͛</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <style>
@@ -102,30 +102,6 @@
                 opacity: 0;
                 transform: scale(1.5);
             }
-        }
-        
-        /* زر التحكم بالمطر */
-        .rain-toggle {
-            position: fixed;
-            bottom: 90px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .rain-toggle:hover {
-            background: rgba(0, 0, 0, 0.5);
-            transform: scale(1.1);
         }
         
         /* محاكاة شكل الهاتف */
@@ -421,13 +397,6 @@
             .header h1 {
                 font-size: 1.2rem;
             }
-            
-            .rain-toggle {
-                bottom: 80px;
-                left: 15px;
-                width: 35px;
-                height: 35px;
-            }
         }
         
         @media (max-height: 700px) {
@@ -456,21 +425,13 @@
     </style>
 </head>
 <body>
-    <!-- تأثير المطر -->
     <div class="rain-effect" id="rain-effect"></div>
     
-    <!-- زر التحكم بالمطر -->
-    <div class="rain-toggle no-select" id="rain-toggle">
-        <i class="fas fa-cloud-rain"></i>
-    </div>
-    
-    <!-- عنصر الصوت -->
     <audio id="rain-sound" loop>
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-239.mp3" type="audio/mpeg">
     </audio>
 
     <div class="phone-frame">
-        <!-- شريط حالة الهاتف -->
         <div class="status-bar no-select">
             <div class="time" id="current-time">12:00</div>
             <div class="status-icons">
@@ -480,15 +441,12 @@
             </div>
         </div>
         
-        <!-- نوتش محاكي للهواتف الحديثة -->
         <div class="phone-notch"></div>
         
-        <!-- رأس التطبيق -->
         <div class="header no-select">
             <h1>العاب لاهل الشرقية فقط</h1>
         </div>
         
-        <!-- المحتوى الرئيسي -->
         <div class="content">
             <div class="welcome-section">
                 <h2>حياكم الله 🙋‍♂️ </h2>
@@ -524,7 +482,7 @@
                     <p>تجنب الاصطدام وكل النقاط</p>
                 </a>
                 
-                <a href="puzzle.html" class="game-card">
+                <a href="puzzle-game.html" class="game-card">
                     <div class="game-icon">
                         <i class="fas fa-puzzle-piece icon-puzzle"></i>
                     </div>
@@ -534,7 +492,6 @@
             </div>
         </div>
         
-        <!-- التذييل -->
         <div class="footer no-select">
             <span class="footer-text">المعتصم الطوقي</span>
             <a href="https://www.instagram.com/ti.1k/" class="social-btn" target="_blank">
@@ -542,91 +499,3 @@
             </a>
         </div>
     </div>
-
-    <script>
-        // تحديث الوقت في شريط الحالة
-        function updateTime() {
-            const now = new Date();
-            const timeElement = document.getElementById('current-time');
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            timeElement.textContent = `${hours}:${minutes}`;
-        }
-        
-        // تحديث الوقت عند التحميل وبشكل دوري
-        updateTime();
-        setInterval(updateTime, 60000);
-        
-        // منع التكبير بالنقر المزدوج على الهواتف
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-        
-        // تأثير المطر
-        const rainEffect = document.getElementById('rain-effect');
-        const rainToggle = document.getElementById('rain-toggle');
-        const rainSound = document.getElementById('rain-sound');
-        let rainActive = false;
-        
-        // إنشاء قطرات المطر
-        function createRain() {
-            rainEffect.innerHTML = '';
-            
-            for (let i = 0; i < 60; i++) {
-                const drop = document.createElement('div');
-                drop.className = 'rain-drop';
-                drop.style.left = `${Math.random() * 100}%`;
-                drop.style.animationDuration = `${0.5 + Math.random() * 0.7}s`;
-                drop.style.animationDelay = `${Math.random() * 2}s`;
-                rainEffect.appendChild(drop);
-                
-                // إنشاء تأثير التناثر عند الاصطدام
-                if (i % 3 === 0) {
-                    const splash = document.createElement('div');
-                    splash.className = 'rain-splash';
-                    splash.style.left = `${Math.random() * 100}%`;
-                    splash.style.bottom = '0';
-                    splash.style.animationDuration = `${0.8 + Math.random() * 0.4}s`;
-                    splash.style.animationDelay = `${Math.random() * 2}s`;
-                    rainEffect.appendChild(splash);
-                }
-            }
-        }
-        
-        // تبديل حالة المطر
-        function toggleRain() {
-            rainActive = !rainActive;
-            
-            if (rainActive) {
-                createRain();
-                rainSound.play().catch(e => console.log('التشغيل التلقائي للصوت غير مسموح:', e));
-                rainToggle.innerHTML = '<i class="fas fa-cloud-sun"></i>';
-                rainToggle.style.color = '#a3e635';
-            } else {
-                rainEffect.innerHTML = '';
-                rainSound.pause();
-                rainToggle.innerHTML = '<i class="fas fa-cloud-rain"></i>';
-                rainToggle.style.color = 'var(--primary)';
-            }
-        }
-        
-        // إضافة حدث النقر لزر المطر
-        rainToggle.addEventListener('click', toggleRain);
-        
-        // ضبط مستوى الصوت
-        rainSound.volume = 0.3;
-        
-        // بدء المطر تلقائياً بعد ثانيتين
-        setTimeout(() => {
-            if (!rainActive) {
-                toggleRain();
-            }
-        }, 2000);
-    </script>
-</body>
-</html>
