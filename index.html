@@ -40,6 +40,94 @@
             height: 100%;
         }
         
+        /* تأثير المطر */
+        .rain-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .rain-drop {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            border-radius: 0 0 5px 5px;
+            opacity: 0.6;
+            animation: rain-fall linear infinite;
+        }
+        
+        .rain-splash {
+            position: absolute;
+            width: 15px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            opacity: 0;
+            animation: rain-splash 0.5s ease-out infinite;
+        }
+        
+        @keyframes rain-fall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes rain-splash {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+        
+        /* زر التحكم بالمطر */
+        .rain-toggle {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rain-toggle:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+        
         /* محاكاة شكل الهاتف */
         .phone-frame {
             width: 100%;
@@ -54,6 +142,7 @@
             box-shadow: 0 0 0 4px #1e293b, 0 20px 40px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
+            z-index: 2;
         }
         
         /* الشريط العلوي للهاتف */
@@ -273,7 +362,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px; /* تم تغيير المسافة هنا */
+            gap: 15px;
             padding: 0 20px;
         }
         
@@ -282,25 +371,19 @@
             font-size: 0.9rem;
         }
         
-        /* تعديل الزر ليناسب تصميم الصفحة */
         .social-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 35px; /* تم تصغير الحجم */
-            height: 35px; /* تم تصغير الحجم */
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--primary);
-            color: #000;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
             text-decoration: none;
-            transition: transform 0.3s ease, background 0.3s ease;
-            font-size: 1.1rem; /* تم تصغير حجم الأيقونة */
+            transition: transform 0.3s ease;
         }
         
-        .social-btn:hover {
-            background: var(--primary-dark);
-        }
-
         .social-btn:active {
             transform: scale(0.95);
         }
@@ -338,6 +421,13 @@
             .header h1 {
                 font-size: 1.2rem;
             }
+            
+            .rain-toggle {
+                bottom: 80px;
+                left: 15px;
+                width: 35px;
+                height: 35px;
+            }
         }
         
         @media (max-height: 700px) {
@@ -366,7 +456,21 @@
     </style>
 </head>
 <body>
+    <!-- تأثير المطر -->
+    <div class="rain-effect" id="rain-effect"></div>
+    
+    <!-- زر التحكم بالمطر -->
+    <div class="rain-toggle no-select" id="rain-toggle">
+        <i class="fas fa-cloud-rain"></i>
+    </div>
+    
+    <!-- عنصر الصوت -->
+    <audio id="rain-sound" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-239.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="phone-frame">
+        <!-- شريط حالة الهاتف -->
         <div class="status-bar no-select">
             <div class="time" id="current-time">12:00</div>
             <div class="status-icons">
@@ -376,16 +480,19 @@
             </div>
         </div>
         
+        <!-- نوتش محاكي للهواتف الحديثة -->
         <div class="phone-notch"></div>
         
+        <!-- رأس التطبيق -->
         <div class="header no-select">
-            <h1>ألعاب للجميع</h1>
+            <h1>العاب لاهل الشرقية فقط</h1>
         </div>
         
+        <!-- المحتوى الرئيسي -->
         <div class="content">
             <div class="welcome-section">
-                <h2>مرحباً بك!</h2>
-                <p>اختر لعبة لتبدأ المتعة</p>
+                <h2>حياكم الله 🙋‍♂️ </h2>
+                <p>اختر لعبة الحين والستمتع</p>
             </div>
             
             <div class="games-grid">
@@ -427,6 +534,7 @@
             </div>
         </div>
         
+        <!-- التذييل -->
         <div class="footer no-select">
             <span class="footer-text">المعتصم الطوقي</span>
             <a href="https://www.instagram.com/ti.1k/" class="social-btn" target="_blank">
@@ -459,13 +567,66 @@
             lastTouchEnd = now;
         }, false);
         
-        // تحسين الأداء على الهواتف
-        if ('scrollBehavior' in document.documentElement.style) {
-            // المتصفح يدعم smooth scroll
-        } else {
-            // إضافة polyfill إذا لزم الأمر
+        // تأثير المطر
+        const rainEffect = document.getElementById('rain-effect');
+        const rainToggle = document.getElementById('rain-toggle');
+        const rainSound = document.getElementById('rain-sound');
+        let rainActive = false;
+        
+        // إنشاء قطرات المطر
+        function createRain() {
+            rainEffect.innerHTML = '';
+            
+            for (let i = 0; i < 60; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain-drop';
+                drop.style.left = `${Math.random() * 100}%`;
+                drop.style.animationDuration = `${0.5 + Math.random() * 0.7}s`;
+                drop.style.animationDelay = `${Math.random() * 2}s`;
+                rainEffect.appendChild(drop);
+                
+                // إنشاء تأثير التناثر عند الاصطدام
+                if (i % 3 === 0) {
+                    const splash = document.createElement('div');
+                    splash.className = 'rain-splash';
+                    splash.style.left = `${Math.random() * 100}%`;
+                    splash.style.bottom = '0';
+                    splash.style.animationDuration = `${0.8 + Math.random() * 0.4}s`;
+                    splash.style.animationDelay = `${Math.random() * 2}s`;
+                    rainEffect.appendChild(splash);
+                }
+            }
         }
+        
+        // تبديل حالة المطر
+        function toggleRain() {
+            rainActive = !rainActive;
+            
+            if (rainActive) {
+                createRain();
+                rainSound.play().catch(e => console.log('التشغيل التلقائي للصوت غير مسموح:', e));
+                rainToggle.innerHTML = '<i class="fas fa-cloud-sun"></i>';
+                rainToggle.style.color = '#a3e635';
+            } else {
+                rainEffect.innerHTML = '';
+                rainSound.pause();
+                rainToggle.innerHTML = '<i class="fas fa-cloud-rain"></i>';
+                rainToggle.style.color = 'var(--primary)';
+            }
+        }
+        
+        // إضافة حدث النقر لزر المطر
+        rainToggle.addEventListener('click', toggleRain);
+        
+        // ضبط مستوى الصوت
+        rainSound.volume = 0.3;
+        
+        // بدء المطر تلقائياً بعد ثانيتين
+        setTimeout(() => {
+            if (!rainActive) {
+                toggleRain();
+            }
+        }, 2000);
     </script>
 </body>
 </html>
-
